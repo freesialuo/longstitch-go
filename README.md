@@ -1,94 +1,75 @@
 # longstitch-go
 
-一个简单的 Go GUI 桌面工具：把多张图片按顺序竖向拼接成一张长图（PNG 输出）。
+**English** · [简体中文](README.zh-CN.md)
 
-推荐仓库名：`longstitch-go`
+[![CI](https://github.com/freesialuo/longstitch-go/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/freesialuo/longstitch-go/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/freesialuo/longstitch-go)](https://github.com/freesialuo/longstitch-go/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## 功能
+A small desktop app that stitches several images, top to bottom, into one long PNG. It is written in Go with [Fyne](https://fyne.io/).
 
-- 图形界面操作（Fyne）
-- 支持逐张添加图片（`png/jpg/jpeg/gif`）
-- 支持移除选中、清空列表
-- 输出为一张竖向长图（PNG）
-- 短图会在大图中自动水平居中
-- 内置尺寸保护，避免超大图导致内存风险
+## Features
 
-## 运行
+- Add images one at a time (PNG, JPEG or GIF), remove the selected one, or clear the list.
+- Images are stacked in list order. A narrower image is centered horizontally.
+- The result is saved as a single PNG.
+- Size guards stop a job that is too large: at most 80 million pixels per input image and 300 million pixels for the output. An oversized job ends with an error instead of exhausting memory.
 
-```bash
-go mod tidy
-make run
-```
+The interface text is in Chinese.
 
-或：
+## Download
+
+Prebuilt binaries for macOS on Apple silicon and for 64-bit Windows are on the [latest release](https://github.com/freesialuo/longstitch-go/releases/latest).
+
+## Run from source
+
+You need Go 1.25 or later and a C compiler, because Fyne uses cgo.
 
 ```bash
 go run ./cmd/longstitch
 ```
 
-## 测试
+`make run` does the same.
+
+## Test
 
 ```bash
 make test
 ```
 
-测试覆盖核心拼接逻辑：
+The tests cover the stitched image size and centered padding, the empty-input error, the output pixel limit, and loading both valid images and unsupported files.
 
-- 拼接后尺寸是否正确
-- 居中填充是否正确
-- 空输入错误
-- 输出像素上限错误
-- 加载图片与异常文件处理
-
-## 本地构建
+## Build
 
 ```bash
 make build
 ```
 
-## CI/CD 说明
+The binary is written to `bin/longstitch`.
 
-- `CI` 工作流：
-  - 触发：`push main`、`pull_request`
-  - 平台：`ubuntu-latest` / `macos-latest` / `windows-latest`
-  - 执行：`go test ./internal/...`
+## CI and releases
 
-- `Release` 工作流：
-  - 触发：推送 tag（例如 `v0.1.0`）
-  - 构建：`macos-arm64` 和 `windows-amd64.exe`
-  - 发布：自动上传到 GitHub Release（`softprops/action-gh-release`）
-
-发布示例：
+- **CI** runs `go test ./internal/...` on Linux, macOS and Windows for every push to `main` and every pull request.
+- **Release** runs when a tag such as `v0.1.0` is pushed. It builds `macos-arm64` and `windows-amd64.exe` and attaches them to a GitHub Release.
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-## 项目结构
+## Project layout
 
 ```text
 .
-├── cmd/longstitch/main.go          # GUI 入口
-├── internal/stitch/stitch.go       # 图像加载、拼接、导出
-├── internal/stitch/stitch_test.go  # 核心单测
-├── .github/workflows/ci.yml        # 持续集成
-├── .github/workflows/release.yml   # 构建与发布
+├── cmd/longstitch/main.go          # GUI entry point
+├── internal/stitch/stitch.go       # Image loading, stitching and PNG export
+├── internal/stitch/stitch_test.go  # Unit tests for the core logic
+├── .github/workflows/ci.yml        # Continuous integration
+├── .github/workflows/release.yml   # Build and release
+├── docs/REFERENCES.md              # Documentation the implementation follows
 └── Makefile
 ```
 
-## 实现依据（文档参考）
+## License
 
-- Fyne 基础 App 与对话框 API：
-  - https://github.com/fyne-io/docs.fyne.io/blob/main/content/docs/api/v2/fyne/pkg.md
-  - https://github.com/fyne-io/docs.fyne.io/blob/main/content/docs/api/v2/dialog/pkg.md
-  - https://github.com/fyne-io/docs.fyne.io/blob/main/content/docs/api/v2/storage/filefilter.md
-- Go 图像与绘制：
-  - https://go.dev/pkg/image
-  - https://go.dev/pkg/image/draw
-- GitHub Actions 工件与权限：
-  - https://github.com/actions/upload-artifact/blob/v4/README.md
-  - https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
-  - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-- GitHub Release Action：
-  - https://github.com/softprops/action-gh-release
+[MIT](LICENSE)
